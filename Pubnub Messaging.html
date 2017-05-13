@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.x.x.min.js"></script>
+
+    </head>
+
+    <body>
+
+<div class="fill vbox">
+    <div id="history" class="grow scroll">
+        <!--<p class="user">How are you doing today?</p>
+        <p class="server">I am quite well, thank you.</p>-->
+    </div>
+    <div class="hbox">
+        <!--<select id="channel">
+            <option selected>filter</option>
+            <option>translate</option>
+            <option>geolocation</option>
+            <option>voting</option>
+            <option>blocker</option>
+        </select>-->
+
+        
+        <input id="message" class="grow"/>
+        <button id="send">Send</button>
+    </div>
+</div>
+
+<script>
+
+
+function $(id) { return document.getElementById(id);  }
+
+
+function appendMessage(msg) {
+    $('history').innerHTML += "<p class='"+msg.source+"'>"+msg.text+"</p>"
+    $('history').scrollTop = $('history').scrollHeight;
+}
+
+
+var pubnub = new PubNub({
+    subscribeKey: 'sub-c-1501a99c-3819-11e7-a58b-02ee2ddab7fe', // always required
+    publishKey: 'pub-c-f19d0491-cba3-4fe8-ba9a-f9e24be6d1f3' // only required if publishing
+});
+
+</script>
+
+
+<script>
+pubnub.publish(
+    {
+        message: {
+            player: 'X',
+            position: '2-2'
+        },
+        channel: 'healthcrunch'
+    },
+    function (status, response) {
+        if (status.error) {
+            console.log(status)
+        } else {
+            console.log("message Published w/ timetoken", response.timetoken)
+        }
+    }
+);
+
+</script>
+
+<script>
+pubnub.addListener({
+    status: function(statusEvent) {
+        if (statusEvent.category === "PNConnectedCategory") {
+            play();
+        } else if (statusEvent.category === "PNUnknownCategory") {
+            var newState = {
+                new: 'error'
+            };
+            pubnub.setState(
+                {
+                    state: newState 
+                },
+                function (status) {
+                    console.log(statusEvent.errorData.message)
+                }
+            );
+        } 
+    },
+    message: function(message) {
+        checkGameStatus(message);
+        updateUI(message);
+    }
+})
+ 
+pubnub.subscribe({ 
+    channels: ['healthcrunch'] 
+});
+
+</script>
+
+
+
+
+<script>
+var pubnub = new PubNub({ subscribeKey: 'demo-36', publishKey: 'demo-36' });
+
+pubnub.addListener({
+  message: function (message) {
+    console.log('message came in: ', message)
+  }
+});
+
+pubnub.subscribe({ channels: ['chatChannel'] });
+
+var  message = { hello: 'there' };
+
+pubnub.publish({ channel: 'chatChannel', message: message }, function (status, response) {
+  if (status.error) {
+    console.log('publish failed', status);
+  } else {
+    console.log('published!');
+  }
+})
+
+</script>
+
+
+    </body>
+<html>
