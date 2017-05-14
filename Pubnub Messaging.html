@@ -10,21 +10,31 @@
 
 <div class="fill vbox">
     <div id="history" class="grow scroll">
-        <!--<p class="user">How are you doing today?</p>
-        <p class="server">I am quite well, thank you.</p>-->
+        <button id="name" style="display:inlineblock;"></button>
+        <button id="hospital" style="display:inlineblock;"></button>
+        <button id="inout" style="display:inlineblock;"></button>
+        <button id-"treatment" style="display:inlineblock;"></button>
+        <button id="test" style="display:inlineblock;"></button>
+        <p class="user"></p>
+        <p class="correspondent"></p>
     </div>
     <div class="hbox">
         <!--<select id="channel">
             <option selected>filter</option>
-            <option>translate</option>
+            <option>translate</option> 
             <option>geolocation</option>
             <option>voting</option>
             <option>blocker</option>
         </select>-->
-
-        
+        <form onsubmit="sendMessage();">
+        <input id="name">
+        <input id="hospital"/>
+        <input id="inout"/>
+        <input id-"treatment"/>
+        <input id="test"/>
         <input id="message" class="grow"/>
-        <button id="send">Send</button>
+        <button type="submit" id="send">Send</button>
+        </form>
     </div>
 </div>
 
@@ -33,19 +43,58 @@
 
 function $(id) { return document.getElementById(id);  }
 
-
 function appendMessage(msg) {
     $('history').innerHTML += "<p class='"+msg.source+"'>"+msg.text+"</p>"
     $('history').scrollTop = $('history').scrollHeight;
 }
-
 
 var pubnub = new PubNub({
     subscribeKey: 'sub-c-1501a99c-3819-11e7-a58b-02ee2ddab7fe', // always required
     publishKey: 'pub-c-f19d0491-cba3-4fe8-ba9a-f9e24be6d1f3' // only required if publishing
 });
 
+
+//add listener for message events
+pubnub.addListener({
+    message: function(evt) {
+        console.log(evt.message);
+        appendMessage(evt.message);
+        alert ('ok');
+    }
+});
+//subscribe to channel
+pubnub.subscribe({channels:'healthcrunch'});
+
+//send the message
+$('message').addEventListener('keypress',function(evt) {
+    if(evt.keyCode == 13) sendMessage();
+});
+$('message').focus();
+$('send').addEventListener('click', sendMessage);
+
+
+function sendMessage() {
+    // var msg = {
+    //     source:'user',
+    //     text: $('message').value
+    // };
+    // pubnub.publish({
+    //     channel:$('healthcrunch').value,
+    //     message: msg
+    // });
+    // $('message').value = '';
+    // $('message').focus();
+    // appendMessage(msg);
+    alert(document.getElementById("name").value);
+}
+
 </script>
+
+
+
+
+
+
 
 
 <script>
